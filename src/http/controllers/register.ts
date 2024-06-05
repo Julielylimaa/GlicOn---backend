@@ -8,9 +8,9 @@ export async function register(req: Request, res:Response) {
     const { name, email, password } = req.body
 
     const userRepository = AppDataSource.getRepository(User)
-    const userExists = await userRepository.find({where: {email: email}})
+    const userExists = await userRepository.findOneBy({ email })
     
-    if (userExists.length > 0) {
+    if (userExists) {
         return res.status(400).json('Email já cadastrado')
     }
 
