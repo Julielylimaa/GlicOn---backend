@@ -19,11 +19,12 @@ export async function authMiddleware(req:Request, res: Response, next: NextFunct
     }
     const token = authorization.split(' ')[1]
     const { id } = jwt.verify(token, process.env.JWT_PASS) as JwtPayload
+    //dar try catch here
     const userRepository = AppDataSource.getRepository(User)
     const userExists = await userRepository.findOneBy({ id })
     
     if (!userExists){
-        throw new AppError('invalid signature', 401)
+        throw new AppError('invalid signature', 403)
     }
 
     const { password: _, ...loggedUser} = userExists

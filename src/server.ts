@@ -4,6 +4,7 @@ import { AppError } from "./errors/AppError"
 import 'express-async-errors'
 export const express = require("express")
 const routes = require ("./routes/routes")
+import jwt from 'jsonwebtoken'
 
 
 const app = express()
@@ -17,17 +18,22 @@ app.use((err:Error, req: Request, res: Response, next: NextFunction ) => {
             message: err.message
         })
     }
-
-    return res.status(500).json({
+    if (err instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ message: 'Token expirou' });
+      } else if (err instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ message: 'Token inválido' });
+      } else if (err instanceof SyntaxError) {
+        return res.status(401).json({ message: 'Token inválido' });
+      }
+      return res.status(500).json({
         status: "error",
-        message: `Internal server error - ${err.message}`
-    })
+        message: `Internal server error - ${err}`
+    });
+
+  
 })
 //
 
-app.get('/', (req, res)=>{
-    res.send('Hello World aaaa')
-})
 
 
 app.listen(3333)
