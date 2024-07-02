@@ -10,25 +10,28 @@ type JwtPayload = {
     id: string,
 }
 
-export async function authMiddleware(req:Request, res: Response, next: NextFunction) {
-    
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
+
     const { authorization } = req.headers
 
-    if(!authorization){
+    if (!authorization) {
         throw new AppError('invalid signature', 401)
     }
     const token = authorization.split(' ')[1]
-    const { id } = jwt.verify(token, process.env.JWT_PASS) as JwtPayload
-    //dar try catch here
-    const userRepository = AppDataSource.getRepository(User)
-    const userExists = await userRepository.findOneBy({ id })
-    
-    if (!userExists){
-        throw new AppError('invalid signature', 403)
-    }
+    try {
+        const { id } = jwt.verify(token, process.env.JWT_PASS) as JwtPayload
+        const userRepository = AppDataSource.getRepository(User)
+        const userExists = await userRepository.findOneBy({ id })
 
-    const { password: _, ...loggedUser} = userExists
-    req.user = loggedUser
-    
-    next()
+        if (!userExists) {
+            throw new AppError('invalid signature', 403)
+        }
+
+        const { password: _, ...loggedUser } = userExists
+        req.user = loggedUser
+
+        next()
+    } catch (error) {
+        return res.status(401).json({ message: 'Token inválido' });
+    }
 }

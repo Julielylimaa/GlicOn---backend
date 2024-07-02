@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, TimeSeriesCollectionOptions } from "typeorm"
 import { User } from "./User"
 
 @Entity()
@@ -15,6 +15,10 @@ export class Notes {
     @Column('float')
     glicemia: number
 
+    @Column({ type: 'time' })
+    horario: string
+
     @ManyToOne(() => User, (user) => user.notes)
     user: User
+    
 }

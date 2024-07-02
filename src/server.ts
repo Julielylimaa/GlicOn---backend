@@ -22,9 +22,7 @@ app.use((err:Error, req: Request, res: Response, next: NextFunction ) => {
         return res.status(401).json({ message: 'Token expirou' });
       } else if (err instanceof jwt.JsonWebTokenError) {
         return res.status(401).json({ message: 'Token inválido' });
-      } else if (err instanceof SyntaxError) {
-        return res.status(401).json({ message: 'Token inválido' });
-      }
+      } 
       return res.status(500).json({
         status: "error",
         message: `Internal server error - ${err}`
