@@ -29,7 +29,7 @@ export async function addNotes(req: Request, res: Response) {
 export async function notes(req: Request, res: Response) {
     const { id } = req.user
     const notesRepository = AppDataSource.getRepository(Notes)
-    const notes = await notesRepository.find({
+    const notesUser = await notesRepository.find({
         relations: {
             user: true,
         },
@@ -39,6 +39,15 @@ export async function notes(req: Request, res: Response) {
             },
         },
     })
+
+    let notes = []
+    
+    notesUser.forEach((element)=>{
+        const { user:_ , ...note} = element
+        notes.push(note)
+    })
+    
+
     return res.json(notes)
 } 
 
